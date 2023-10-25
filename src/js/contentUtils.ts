@@ -35,6 +35,7 @@ import isPathnameExcluded from './content/isPathNameExcluded';
 import {doesWorkerUrlConformToCSP} from './content/doesWorkerUrlConformToCSP';
 import {checkWorkerEndpointCSP} from './content/checkWorkerEndpointCSP';
 import {MessagePayload} from './shared/MessageTypes';
+import ensureManifestWasOrWillBeLoaded from './content/ensureManifestWasOrWillBeLoaded';
 
 type ContentScriptConfig = {
   checkLoggedInFromCookie: boolean;
@@ -70,6 +71,7 @@ export const FOUND_SCRIPTS = new Map<string, Array<ScriptDetails>>([
   [UNINITIALIZED, []],
 ]);
 const ALL_FOUND_SCRIPT_TAGS = new Set();
+const FOUND_MANIFEST_VERSIONS = new Set<string>();
 
 type ScriptDetailsWithSrc = {
   otherType: string;
@@ -234,6 +236,7 @@ export function storeFoundJS(scriptNodeMaybe: HTMLScriptElement): void {
           clearTimeout(manifestTimeoutID);
           manifestTimeoutID = '';
         }
+        FOUND_MANIFEST_VERSIONS.add(version);
         window.setTimeout(() => processFoundJS(version), 0);
       } else {
         if ('UNKNOWN_ENDPOINT_ISSUE' === response.reason) {
@@ -285,6 +288,7 @@ export function storeFoundJS(scriptNodeMaybe: HTMLScriptElement): void {
         otherType,
       };
       ALL_FOUND_SCRIPT_TAGS.add(scriptNodeMaybe.src);
+      ensureManifestWasOrWillBeLoaded(FOUND_MANIFEST_VERSIONS, version);
     } else {
       if (scriptNodeMaybe.src !== '') {
         scriptDetails = {
@@ -292,6 +296,7 @@ export function storeFoundJS(scriptNodeMaybe: HTMLScriptElement): void {
           otherType: currentFilterType,
         };
         ALL_FOUND_SCRIPT_TAGS.add(scriptNodeMaybe.src);
+        ensureManifestWasOrWillBeLoaded(FOUND_MANIFEST_VERSIONS, version);
       } else {
         // no src, access innerHTML for the code
         const hashLookupAttribute =

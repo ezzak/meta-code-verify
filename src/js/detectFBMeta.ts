@@ -29,10 +29,6 @@ startFor(
   ORIGIN_TYPE.FACEBOOK,
   Object.freeze({
     checkLoggedInFromCookie: true,
-    enforceCSPHeaders: true,
     excludedPathnames: EXCLUDED_PATHNAMES,
-    longTailIsLoadedConditionally: true,
-    scriptsShouldHaveManifestProp: true,
-    useCompanyManifest: true,
   }),
 );

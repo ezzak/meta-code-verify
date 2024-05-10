@@ -12,10 +12,6 @@ startFor(
   ORIGIN_TYPE.INSTAGRAM,
   Object.freeze({
     checkLoggedInFromCookie: true,
-    enforceCSPHeaders: true,
     excludedPathnames: [],
-    longTailIsLoadedConditionally: true,
-    scriptsShouldHaveManifestProp: true,
-    useCompanyManifest: true,
   }),
 );
